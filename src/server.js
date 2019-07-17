@@ -60,4 +60,5 @@ class App {
     })
   }
 }
+
 module.exports = new App().express
