@@ -1,6 +1,7 @@
 const Tool = require('../models/Tool')
 const User = require('../models/User')
-const Mail = require('../services/Mail')
+const NewToolMail = require('../jobs/NewToolMail')
+const Queue = require('../services/Queue')
 
 class ToolController {
   async index (req, res) {
@@ -34,13 +35,11 @@ class ToolController {
     const tool = await Tool.create({ ...req.body, user: req.userId })
 
     const user = await User.findById(req.userId)
-    await Mail.sendMail({
-      from: '"Noreply" <noreply@application.com>',
-      to: 'admin@application.com',
-      subject: 'New tool added',
-      template: 'newtool',
-      context: { user, tool }
-    })
+
+    Queue.create(NewToolMail.key, {
+      user,
+      tool
+    }).save()
 
     return res.status(201).json(tool)
   }
