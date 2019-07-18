@@ -12,9 +12,6 @@ const validators = require('./app/validators')
 // Session's Routes
 routes.post('/sessions', validate(validators.Session), handle(controllers.SessionController.store))
 
-// User's Routes
-routes.post('/users', validate(validators.User), handle(controllers.UserController.store))
-
 // Force all routes below to use authentication
 routes.use(authMiddleware)
 
@@ -24,5 +21,12 @@ routes.get('/tools/:id', handle(controllers.ToolController.show))
 routes.post('/tools', validate(validators.Tool), handle(controllers.ToolController.store))
 routes.put('/tools/:id', validate(validators.Tool), handle(controllers.ToolController.update))
 routes.delete('/tools/:id', handle(controllers.ToolController.destroy))
+
+// User's Routes
+routes.get('/users', handle(controllers.UserController.index))
+routes.get('/users/:id', handle(controllers.UserController.show))
+routes.post('/users', validate(validators.User), handle(controllers.UserController.store))
+routes.put('/users/:id', handle(controllers.UserController.update))
+routes.delete('/users/:id', handle(controllers.UserController.destroy))
 
 module.exports = routes
