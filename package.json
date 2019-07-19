@@ -1,8 +1,9 @@
 {
   "name": "desafio-bossabox-back-end",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "src/index.js",
   "license": "MIT",
+  "baseUrlPath": "/",
   "scripts": {
     "start": "nodemon src/index.js"
   },
@@ -23,6 +24,7 @@
     "nodemailer": "^6.3.0",
     "nodemailer-express-handlebars": "^3.0.0",
     "require-dir": "^1.2.0",
+    "swagger-ui-express": "^4.0.7",
     "youch": "^2.0.10"
   },
   "devDependencies": {

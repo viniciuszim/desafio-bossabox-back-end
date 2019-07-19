@@ -7,6 +7,7 @@ const Sentry = require('@sentry/node')
 const validate = require('express-validation')
 const databaseConfig = require('./config/database')
 const sentryConfig = require('./config/sentry')
+const swaggerUi = require('swagger-ui-express')
 
 class App {
   constructor () {
@@ -16,6 +17,7 @@ class App {
     this.sentry()
     this.database()
     this.middlewares()
+    this.documentation()
     this.routes()
     this.exception()
   }
@@ -34,6 +36,15 @@ class App {
   middlewares () {
     this.express.use(express.json())
     this.express.use(Sentry.Handlers.requestHandler())
+  }
+
+  documentation () {
+    var options = {
+      swaggerOptions: {
+        authAction: { JWT: { name: 'JWT', schema: { type: 'apiKey', in: 'header', name: 'Authorization', description: '' }, value: 'Bearer <JWT>' } }
+      }
+    }
+    this.express.use('/api-docs', swaggerUi.serve, swaggerUi.setup(require('./config/swagger.json'), options))
   }
 
   routes () {
