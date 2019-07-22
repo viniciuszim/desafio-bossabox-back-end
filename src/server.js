@@ -1,5 +1,3 @@
-require('dotenv').config()
-
 const express = require('express')
 const mongoose = require('mongoose')
 const Youch = require('youch')
@@ -44,7 +42,7 @@ class App {
         authAction: { JWT: { name: 'JWT', schema: { type: 'apiKey', in: 'header', name: 'Authorization', description: '' }, value: 'Bearer <JWT>' } }
       }
     }
-    this.express.use('/api-docs', swaggerUi.serve, swaggerUi.setup(require('./config/swagger.json'), options))
+    this.express.use('/api-docs', swaggerUi.serve, swaggerUi.setup(require('./docs/swagger.json'), options))
   }
 
   routes () {

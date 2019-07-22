@@ -3,6 +3,12 @@ const databaseConfig = require('../src/config/database')
 
 const User = require('../src/app/models/User')
 
+const userMock = {
+  name: 'Admin',
+  email: 'admin@company.com',
+  password: '123456'
+}
+
 /**
  * Make any changes you need to make to the database here
  */
@@ -13,14 +19,7 @@ async function up () {
     useNewUrlParser: true
   })
 
-  const user = {
-    name: 'Admin',
-    email: 'admin@company.com',
-    password: '123456'
-
-  }
-  const newUser = await User.create(user)
-  console.log(newUser)
+  await User.create(userMock)
 }
 
 /**
@@ -28,6 +27,12 @@ async function up () {
  */
 async function down () {
   // Write migration here
+  mongoose.connect(databaseConfig.uri, {
+    useCreateIndex: true,
+    useNewUrlParser: true
+  })
+
+  await User.findOneAndDelete({ email: userMock.email })
 }
 
 module.exports = { up, down }

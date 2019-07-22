@@ -9,6 +9,10 @@ const authMiddleware = require('./app/middlewares/auth')
 const controllers = require('./app/controllers')
 const validators = require('./app/validators')
 
+routes.get('/', (req, res) => {
+  res.send('Server is running...')
+})
+
 // Session's Routes
 routes.post('/sessions', validate(validators.Session), handle(controllers.SessionController.store))
 
