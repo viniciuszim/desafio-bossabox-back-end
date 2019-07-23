@@ -17,6 +17,10 @@ class UserController {
     try {
       const user = await User.findById(req.params.id)
 
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' })
+      }
+
       return res.json(user)
     } catch (error) {
       return res.status(404).json({ error: 'User not found' })
@@ -47,6 +51,10 @@ class UserController {
         new: true
       })
 
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' })
+      }
+
       return res.json(user)
     } catch (error) {
       return res.status(404).json({ error: 'User not found' })
@@ -55,7 +63,11 @@ class UserController {
 
   async destroy (req, res) {
     try {
-      await User.findByIdAndDelete(req.params.id)
+      const user = await User.findByIdAndDelete(req.params.id)
+
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' })
+      }
 
       return res.send()
     } catch (error) {

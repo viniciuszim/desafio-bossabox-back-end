@@ -23,7 +23,7 @@ routes.use(authMiddleware)
 routes.get('/tools', handle(controllers.ToolController.index))
 routes.get('/tools/:id', handle(controllers.ToolController.show))
 routes.post('/tools', validate(validators.Tool), handle(controllers.ToolController.store))
-routes.put('/tools/:id', validate(validators.Tool), handle(controllers.ToolController.update))
+routes.put('/tools/:id', handle(controllers.ToolController.update))
 routes.delete('/tools/:id', handle(controllers.ToolController.destroy))
 
 // User's Routes

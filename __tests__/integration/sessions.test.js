@@ -38,6 +38,23 @@ describe('Session Integration Test', () => {
       expect(response.status).toBe(400)
     })
 
+    it('2- should not be able to authenticate with invalid password', async () => {
+      const userCreated = await User.create({
+        name: faker.name.findName(),
+        email: faker.internet.email(),
+        password: '123456'
+      })
+
+      const response = await request(global.app)
+        .post('/sessions')
+        .send({
+          email: userCreated.email,
+          password: '999999'
+        })
+
+      expect(response.status).toBe(400)
+    })
+
     it('3- should not be able to authenticate with invalid credentials', async () => {
       const response = await request(global.app)
         .post('/sessions')

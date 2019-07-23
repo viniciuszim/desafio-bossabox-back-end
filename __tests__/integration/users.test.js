@@ -62,7 +62,7 @@ describe('User Integration Test', () => {
       expect(response.status).toBe(404)
     })
 
-    it('5- should be able to store an new user', async () => {
+    it('5- should be able to store a new user', async () => {
       const userLogged = await createAndLogAnUser()
 
       const response = await request(global.app)
@@ -77,7 +77,7 @@ describe('User Integration Test', () => {
       expect(response.status).toBe(200)
     })
 
-    it('6- should not be able to store an new user with an existing email', async () => {
+    it('6- should not be able to store a new user with an existing email', async () => {
       const userLogged = await createAndLogAnUser()
 
       const response = await request(global.app)
@@ -92,7 +92,7 @@ describe('User Integration Test', () => {
       expect(response.status).toBe(400)
     })
 
-    it('7- should not be able to store an new user without the field name', async () => {
+    it('7- should not be able to store a new user without the field name', async () => {
       const userLogged = await createAndLogAnUser()
 
       const response = await request(global.app)
@@ -108,7 +108,7 @@ describe('User Integration Test', () => {
       expect(response.error.text).toMatch('is required')
     })
 
-    it('8- should not be able to store an new user without the field email', async () => {
+    it('8- should not be able to store a new user without the field email', async () => {
       const userLogged = await createAndLogAnUser()
 
       const response = await request(global.app)
@@ -124,7 +124,7 @@ describe('User Integration Test', () => {
       expect(response.error.text).toMatch('is required')
     })
 
-    it('9- should not be able to store an new user without the field password', async () => {
+    it('9- should not be able to store a new user without the field password', async () => {
       const userLogged = await createAndLogAnUser()
 
       const response = await request(global.app)

@@ -3,10 +3,12 @@ const faker = require('faker')
 
 const { Tool, User } = require('../../src/app/models')
 
+let i = 0
+
 createAndLogAnUser = async () => {
   const userCreated = await User.create({
     name: faker.name.findName(),
-    email: faker.internet.email(),
+    email: `${i++}${faker.internet.email()}`,
     password: '123456'
   })
 
@@ -18,6 +20,18 @@ createAndLogAnUser = async () => {
     })
 
   return response.body
+}
+
+createTool = async user => {
+  const toolCreated = await Tool.create({
+    title: faker.lorem.word(),
+    link: faker.internet.url(),
+    description: faker.lorem.paragraph(),
+    tags: faker.lorem.words().split(' '),
+    user: user._id
+  })
+
+  return toolCreated
 }
 
 describe('Tool Integration Test', () => {
@@ -32,203 +46,179 @@ describe('Tool Integration Test', () => {
       expect(response.status).toBe(200)
     })
 
-    // it('2- should be able to list users using filter by name', async () => {
-    //   const userLogged = await createAndLogAnUser()
+    it('2- should be able to list tools using filter by title', async () => {
+      const userLogged = await createAndLogAnUser()
+      const toolCreated = await createTool(userLogged.user)
 
-    //   const response = await request(global.app)
-    //     .get(`/users?name=${userLogged.user.name}`)
-    //     .set('Authorization', `Bearer ${userLogged.token}`)
+      const response = await request(global.app)
+        .get(`/tools?q=${toolCreated.title}`)
+        .set('Authorization', `Bearer ${userLogged.token}`)
 
-    //   expect(response.status).toBe(200)
-    // })
+      expect(response.status).toBe(200)
+    })
 
-    // it('3- should be able to show an user by a valid ID', async () => {
-    //   const userLogged = await createAndLogAnUser()
+    it('3- should be able to list tools using filter by tag', async () => {
+      const userLogged = await createAndLogAnUser()
+      const toolCreated = await createTool(userLogged.user)
 
-    //   const response = await request(global.app)
-    //     .get(`/users/${userLogged.user._id}`)
-    //     .set('Authorization', `Bearer ${userLogged.token}`)
+      const response = await request(global.app)
+        .get(`/tools?tag=${toolCreated.tags[0]}`)
+        .set('Authorization', `Bearer ${userLogged.token}`)
 
-    //   expect(response.status).toBe(200)
-    // })
+      expect(response.status).toBe(200)
+    })
 
-    // it('4- should not be able to show an user by an invalid ID', async () => {
-    //   const userLogged = await createAndLogAnUser()
+    it('4- should be able to show a tool by a valid ID', async () => {
+      const userLogged = await createAndLogAnUser()
+      const toolCreated = await createTool(userLogged.user)
 
-    //   const response = await request(global.app)
-    //     .get('/users/1234567890')
-    //     .set('Authorization', `Bearer ${userLogged.token}`)
+      const response = await request(global.app)
+        .get(`/tools/${toolCreated._id}`)
+        .set('Authorization', `Bearer ${userLogged.token}`)
 
-    //   expect(response.status).toBe(404)
-    // })
+      expect(response.status).toBe(200)
+    })
 
-    // it('5- should be able to store an new user', async () => {
-    //   const userLogged = await createAndLogAnUser()
+    it('5- should not be able to show a tool by an invalid ID', async () => {
+      const userLogged = await createAndLogAnUser()
 
-    //   const response = await request(global.app)
-    //     .post('/users')
-    //     .send({
-    //       name: faker.name.findName(),
-    //       email: faker.internet.email(),
-    //       password: '123456'
-    //     })
-    //     .set('Authorization', `Bearer ${userLogged.token}`)
+      const response = await request(global.app)
+        .get('/tools/1234567890')
+        .set('Authorization', `Bearer ${userLogged.token}`)
 
-    //   expect(response.status).toBe(200)
-    // })
+      expect(response.status).toBe(404)
+    })
 
-    // it('6- should not be able to store an new user with an existing email', async () => {
-    //   const userLogged = await createAndLogAnUser()
+    it('6- should be able to store a new tool', async () => {
+      const userLogged = await createAndLogAnUser()
 
-    //   const response = await request(global.app)
-    //     .post('/users')
-    //     .send({
-    //       name: faker.name.findName(),
-    //       email: userLogged.email,
-    //       password: '123456'
-    //     })
-    //     .set('Authorization', `Bearer ${userLogged.token}`)
+      const response = await request(global.app)
+        .post('/tools')
+        .send({
+          title: faker.lorem.word(),
+          link: faker.internet.url(),
+          description: faker.lorem.paragraph(),
+          tags: faker.lorem.words().split(' ')
+        })
+        .set('Authorization', `Bearer ${userLogged.token}`)
 
-    //   expect(response.status).toBe(400)
-    // })
+      expect(response.status).toBe(201)
+    })
 
-    // it('7- should not be able to store an new user without the field name', async () => {
-    //   const userLogged = await createAndLogAnUser()
+    it('7- should not be able to store a new tool without the field title', async () => {
+      const userLogged = await createAndLogAnUser()
 
-    //   const response = await request(global.app)
-    //     .post('/users')
-    //     .send({
-    //       email: faker.internet.email(),
-    //       password: '123456'
-    //     })
-    //     .set('Authorization', `Bearer ${userLogged.token}`)
+      const response = await request(global.app)
+        .post('/tools')
+        .send({
+          link: faker.internet.url(),
+          description: faker.lorem.paragraph(),
+          tags: faker.lorem.words().split(' ')
+        })
+        .set('Authorization', `Bearer ${userLogged.token}`)
 
-    //   expect(response.status).toBe(400)
-    //   expect(response.error.text).toMatch('"field":["name"]')
-    //   expect(response.error.text).toMatch('is required')
-    // })
+      expect(response.status).toBe(400)
+      expect(response.error.text).toMatch('"field":["title"]')
+      expect(response.error.text).toMatch('is required')
+    })
 
-    // it('8- should not be able to store an new user without the field email', async () => {
-    //   const userLogged = await createAndLogAnUser()
+    it('8- should not be able to store a new tool without the field link', async () => {
+      const userLogged = await createAndLogAnUser()
 
-    //   const response = await request(global.app)
-    //     .post('/users')
-    //     .send({
-    //       name: faker.name.findName(),
-    //       password: '123456'
-    //     })
-    //     .set('Authorization', `Bearer ${userLogged.token}`)
+      const response = await request(global.app)
+        .post('/tools')
+        .send({
+          title: faker.lorem.word(),
+          description: faker.lorem.paragraph(),
+          tags: faker.lorem.words().split(' ')
+        })
+        .set('Authorization', `Bearer ${userLogged.token}`)
 
-    //   expect(response.status).toBe(400)
-    //   expect(response.error.text).toMatch('"field":["email"]')
-    //   expect(response.error.text).toMatch('is required')
-    // })
+      expect(response.status).toBe(400)
+      expect(response.error.text).toMatch('"field":["link"]')
+      expect(response.error.text).toMatch('is required')
+    })
 
-    // it('9- should not be able to store an new user without the field password', async () => {
-    //   const userLogged = await createAndLogAnUser()
+    it('9- should not be able to store a new tool without the field description', async () => {
+      const userLogged = await createAndLogAnUser()
 
-    //   const response = await request(global.app)
-    //     .post('/users')
-    //     .send({
-    //       name: faker.name.findName(),
-    //       email: faker.internet.email()
-    //     })
-    //     .set('Authorization', `Bearer ${userLogged.token}`)
+      const response = await request(global.app)
+        .post('/tools')
+        .send({
+          title: faker.lorem.word(),
+          link: faker.internet.url(),
+          tags: faker.lorem.words().split(' ')
+        })
+        .set('Authorization', `Bearer ${userLogged.token}`)
 
-    //   expect(response.status).toBe(400)
-    //   expect(response.error.text).toMatch('"field":["password"]')
-    //   expect(response.error.text).toMatch('is required')
-    // })
+      expect(response.status).toBe(400)
+      expect(response.error.text).toMatch('"field":["description"]')
+      expect(response.error.text).toMatch('is required')
+    })
 
-    // it('10- should be able to update an user by a valid ID', async () => {
-    //   const userLogged = await createAndLogAnUser()
+    it('10- should not be able to store a new tool without the field tags', async () => {
+      const userLogged = await createAndLogAnUser()
 
-    //   const response = await request(global.app)
-    //     .put(`/users/${userLogged.user._id}`)
-    //     .send({
-    //       name: faker.name.findName()
-    //     })
-    //     .set('Authorization', `Bearer ${userLogged.token}`)
+      const response = await request(global.app)
+        .post('/tools')
+        .send({
+          title: faker.lorem.word(),
+          link: faker.internet.url(),
+          description: faker.lorem.paragraph()
+        })
+        .set('Authorization', `Bearer ${userLogged.token}`)
 
-    //   expect(response.status).toBe(200)
-    // })
+      expect(response.status).toBe(400)
+      expect(response.error.text).toMatch('"field":["tags"]')
+      expect(response.error.text).toMatch('is required')
+    })
 
-    // it('11- should not be able to update an user by an invalid ID', async () => {
-    //   const userLogged = await createAndLogAnUser()
+    it('11- should be able to update a tool by a valid ID', async () => {
+      const userLogged = await createAndLogAnUser()
+      const toolCreated = await createTool(userLogged.user)
 
-    //   const response = await request(global.app)
-    //     .put('/users/1234567890')
-    //     .send({
-    //       name: faker.name.findName()
-    //     })
-    //     .set('Authorization', `Bearer ${userLogged.token}`)
+      const response = await request(global.app)
+        .put(`/tools/${toolCreated._id}`)
+        .send({
+          title: faker.lorem.word()
+        })
+        .set('Authorization', `Bearer ${userLogged.token}`)
 
-    //   expect(response.status).toBe(404)
-    // })
+      expect(response.status).toBe(200)
+    })
 
-    // it('12- should not be able to update an user by an existing email of another user', async () => {
-    //   const userLogged = await createAndLogAnUser()
+    it('12- should not be able to update a tool by an invalid ID', async () => {
+      const userLogged = await createAndLogAnUser()
 
-    //   const userCreated = await User.create({
-    //     name: faker.name.findName(),
-    //     email: faker.internet.email(),
-    //     password: '123456'
-    //   })
+      const response = await request(global.app)
+        .put('/tools/1234567890')
+        .send({
+          title: faker.lorem.word()
+        })
+        .set('Authorization', `Bearer ${userLogged.token}`)
 
-    //   const response = await request(global.app)
-    //     .put(`/users/${userCreated._id}`)
-    //     .send({
-    //       name: faker.name.findName(),
-    //       email: userLogged.user.email
-    //     })
-    //     .set('Authorization', `Bearer ${userLogged.token}`)
+      expect(response.status).toBe(404)
+    })
 
-    //   expect(response.status).toBe(400)
-    // })
+    it('13- should be able to delete a tool by a valid ID', async () => {
+      const userLogged = await createAndLogAnUser()
+      const toolCreated = await createTool(userLogged.user)
 
-    // it('13- should be able to update the email if it not belong an other user', async () => {
-    //   const userLogged = await createAndLogAnUser()
+      const response = await request(global.app)
+        .delete(`/tools/${toolCreated._id}`)
+        .set('Authorization', `Bearer ${userLogged.token}`)
 
-    //   const userCreated = await User.create({
-    //     name: faker.name.findName(),
-    //     email: faker.internet.email(),
-    //     password: '123456'
-    //   })
+      expect(response.status).toBe(200)
+    })
 
-    //   const response = await request(global.app)
-    //     .put(`/users/${userCreated._id}`)
-    //     .send({
-    //       email: faker.internet.email()
-    //     })
-    //     .set('Authorization', `Bearer ${userLogged.token}`)
+    it('14- should not be able to delete a tool by an invalid ID', async () => {
+      const userLogged = await createAndLogAnUser()
 
-    //   expect(response.status).toBe(200)
-    // })
+      const response = await request(global.app)
+        .delete('/tools/1234567890')
+        .set('Authorization', `Bearer ${userLogged.token}`)
 
-    // it('14- should be able to delete an user by a valid ID', async () => {
-    //   const userLogged = await createAndLogAnUser()
-
-    //   const userCreated = await User.create({
-    //     name: faker.name.findName(),
-    //     email: faker.internet.email(),
-    //     password: '123456'
-    //   })
-
-    //   const response = await request(global.app)
-    //     .delete(`/users/${userCreated._id}`)
-    //     .set('Authorization', `Bearer ${userLogged.token}`)
-
-    //   expect(response.status).toBe(200)
-    // })
-
-    // it('15- should not be able to delete an user by an invalid ID', async () => {
-    //   const userLogged = await createAndLogAnUser()
-
-    //   const response = await request(global.app)
-    //     .delete('/users/1234567890')
-    //     .set('Authorization', `Bearer ${userLogged.token}`)
-
-    //   expect(response.status).toBe(404)
-    // })
+      expect(response.status).toBe(404)
+    })
   })
 })

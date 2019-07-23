@@ -18,7 +18,9 @@ module.exports = {
   clearMocks: true,
 
   // Indicates whether the coverage information should be collected while executing the test
-  collectCoverage: false,
+  // coveragePath:
+  // file:///Users/viniciusmigueloliveira/Desenvolvimento/workspaces/defaultsProjects/_scripts/desafio-bossabox-back-end/__tests__/coverage/lcov-report/index.html
+  collectCoverage: true,
 
   // An array of glob patterns indicating a set of files for which coverage information should be collected
   collectCoverageFrom: ['src/app/**'],
@@ -140,8 +142,8 @@ module.exports = {
 
   // The glob patterns Jest uses to detect test files
   testMatch: [
-    // '**/__tests__/**/*.test.js'
-    '**/__tests__/**/tools.test.js'
+    '**/__tests__/**/*.test.js'
+    // '**/__tests__/**/users.test.js'
   ]
 
   // An array of regexp pattern strings that are matched against all test paths, matched tests are skipped
