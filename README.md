@@ -88,5 +88,5 @@ return:
 
 ### Documentacão das rotas
 
-Para verificar a documentacão completa das rotas, acesse:
+Para verificar a documentacão completa das rotas, acesse: http://localhost:3000/api-docs
 
