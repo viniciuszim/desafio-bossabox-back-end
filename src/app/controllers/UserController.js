@@ -14,9 +14,13 @@ class UserController {
   }
 
   async show (req, res) {
-    const user = await User.findById(req.params.id)
+    try {
+      const user = await User.findById(req.params.id)
 
-    return res.json(user)
+      return res.json(user)
+    } catch (error) {
+      return res.status(404).json({ error: 'User not found' })
+    }
   }
 
   async store (req, res) {
@@ -32,17 +36,31 @@ class UserController {
   }
 
   async update (req, res) {
-    const user = await User.findByIdAndUpdate(req.params.id, req.body, {
-      new: true
-    })
+    try {
+      const { email } = req.body
 
-    return res.json(user)
+      if (await User.findOne({ email }) && req.userId !== req.params.id) {
+        return res.status(400).json({ error: 'E-mail already used' })
+      }
+
+      const user = await User.findByIdAndUpdate(req.params.id, req.body, {
+        new: true
+      })
+
+      return res.json(user)
+    } catch (error) {
+      return res.status(404).json({ error: 'User not found' })
+    }
   }
 
   async destroy (req, res) {
-    await User.findByIdAndDelete(req.params.id)
+    try {
+      await User.findByIdAndDelete(req.params.id)
 
-    return res.send()
+      return res.send()
+    } catch (error) {
+      return res.status(404).json({ error: 'User not found' })
+    }
   }
 }
 

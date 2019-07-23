@@ -1,6 +1,9 @@
 # Node modules
 node_modules
 
+# coverage Tests
+__tests__/coverage
+
 # Adonis directory for storing tmp files
 tmp
 

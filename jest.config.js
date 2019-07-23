@@ -18,7 +18,7 @@ module.exports = {
   clearMocks: true,
 
   // Indicates whether the coverage information should be collected while executing the test
-  collectCoverage: true,
+  collectCoverage: false,
 
   // An array of glob patterns indicating a set of files for which coverage information should be collected
   collectCoverageFrom: ['src/app/**'],
@@ -140,7 +140,8 @@ module.exports = {
 
   // The glob patterns Jest uses to detect test files
   testMatch: [
-    '**/__tests__/**/*.test.js'
+    // '**/__tests__/**/*.test.js'
+    '**/__tests__/**/tools.test.js'
   ]
 
   // An array of regexp pattern strings that are matched against all test paths, matched tests are skipped
